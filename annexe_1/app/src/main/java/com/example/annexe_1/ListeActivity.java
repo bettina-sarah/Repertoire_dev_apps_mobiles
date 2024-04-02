@@ -37,14 +37,16 @@ public class ListeActivity extends AppCompatActivity {
         ArrayList<String> listeArrayMemo = new ArrayList<>();
 
         try (
+                //ATTN: pas new OpenFileInput !!!
         FileInputStream fos = openFileInput("memos.txt");
-        InputStreamReader osw = new InputStreamReader(fos);
-        BufferedReader bw = new BufferedReader(osw))
+        InputStreamReader isr = new InputStreamReader(fos);
+        BufferedReader br = new BufferedReader(isr))
         {
             //bw.ready: return true si prochaine ligne est bonne a lire
-            //while bw.readline() !=null ..
-            while(bw.ready()){
-                listeArrayMemo.add(bw.readLine());
+            //br.read() un char a la fois - unicode - pt transtyper en char ?
+            //while br.readline() !=null ..
+            while(br.ready()){ //tant qu'il y a des donnees...
+                listeArrayMemo.add(br.readLine());
             }
         }
 
