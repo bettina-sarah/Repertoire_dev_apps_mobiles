@@ -15,6 +15,13 @@ public class SingletonMemo {
     private ArrayList<Memo> listeMemos;
     private Context context;
 
+  //  lorsqu,on ferme, onStop; redefinir; fileOutputStream f = openFileOutput(...)
+    // objectOutputStream o = new objectOutputStream(f)
+
+    //seekbar: ca se serialise pas; (pas de implements serializable)
+    //serialiser int des seekbar
+    //dans oncreate, ob lit, transtyper...asigner aux seekbar w setprogress
+
 
     private SingletonMemo(Context context) {
         listeMemos = new ArrayList<>();
