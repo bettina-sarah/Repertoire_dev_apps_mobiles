@@ -10,6 +10,14 @@ public class Produit {
         this.prix = prix;
     }
 
+    public String getNom() {
+        return nom;
+    }
+
+    public String getPrix() {
+        return prix;
+    }
+
     public static class Builder {
         private String nom;
         private String prix;
@@ -20,6 +28,7 @@ public class Produit {
             this.nom = nom;
             return this;
         }
+
 
         public Builder setPrix(String prix) {
             this.prix = prix;
