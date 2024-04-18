@@ -1,8 +1,9 @@
 package com.eric.appexamen1;
 
 
+import java.io.Serializable;
 
-public class Groupe  {
+public class Groupe  implements Serializable {
     private String nomCours;
     private int adresseImage;
     private String commentaires;

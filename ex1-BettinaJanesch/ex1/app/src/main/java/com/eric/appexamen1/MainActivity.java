@@ -1,6 +1,8 @@
 package com.eric.appexamen1;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -9,6 +11,12 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -20,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     TextView texteCommentaires;
 
     ImageView groupeSelect;
+
+    String serialiserGroupeString;
+    int serialiserGroupeImage;
 
     Groupe[] liste = {new Groupe ("c23", R.drawable.c23, "Excellent groupe"),new Groupe("c34", R.drawable.c34, "superbe cohorte"),new Groupe("c44", R.drawable.c44, "groupe travaillant")  };
     Vector<HashMap<String,Object>> vecteur;
@@ -68,17 +79,64 @@ public class MainActivity extends AppCompatActivity {
 
         Ecouteur ec = new Ecouteur();
         listeVisuelle.setOnItemClickListener(ec);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        deserialiserInfoGroupe();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try {
+            serialiserInfoGroupe(serialiserGroupeString, serialiserGroupeImage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private class Ecouteur implements AdapterView.OnItemClickListener {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            texteCommentaires.setText(liste[position].getCommentaires());
-            groupeSelect.setImageResource(liste[position].getAdresseImage());
+            //on veut se rappeler globalement pour on stop !
+            serialiserGroupeString = liste[position].getCommentaires();
+            serialiserGroupeImage = (liste[position].getAdresseImage());
+
+            texteCommentaires.setText(serialiserGroupeString);
+            groupeSelect.setImageResource(serialiserGroupeImage);
+
+
         }
     }
 
+    public void serialiserInfoGroupe(String commentaire, int image) throws IOException {
+        try (FileOutputStream fos = MainActivity.this.openFileOutput("groupeInfo.ser", Context.MODE_PRIVATE);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(commentaire);
+            oos.writeObject(image);
+        }
+    }
 
+    public void deserialiserInfoGroupe() {
+        try (FileInputStream fis = MainActivity.this.openFileInput("groupeInfo.ser");
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            String commentaire = (String) ois.readObject();
+            int image = (int) ois.readObject();
+            // remettre les memes infos
+            texteCommentaires.setText(commentaire);
+            groupeSelect.setImageResource(image);
+
+    } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 }
