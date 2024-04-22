@@ -14,6 +14,8 @@ import java.util.List;
 
 public class Modele {
 
+    private static Modele instance;
+
     private ListeChansons listeChansons;
 
     private RequestQueue requestQueue;
@@ -22,9 +24,18 @@ public class Modele {
 
     private String jsonUrl;
 
-    public Modele(Context context) {
+    public static Modele getInstance(Context context) {
+        if (instance == null)
+            instance = new Modele(context);
+        return instance;
+    }
+
+
+
+
+    private Modele(Context context) {
         this.requestQueue = Volley.newRequestQueue(context);
-        this.jsonUrl = "https://api.jsonbin.io/v3/b/661ab8b1acd3cb34a837f284?meta=false";
+        this.jsonUrl = "https://api.npoint.io/d4c29479e010376e6847";
     }
 
     public void openJSON(){
