@@ -8,6 +8,7 @@ import androidx.media3.session.MediaSession;
 import androidx.media3.session.MediaSessionService;
 import androidx.media3.ui.PlayerView;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,7 +20,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements JSONObserver, Runnable {
+public class MainActivity extends AppCompatActivity implements JSONObserver {
 
     ExoPlayer player;
     PlayerView vue;
@@ -41,14 +42,18 @@ public class MainActivity extends AppCompatActivity implements JSONObserver, Run
 
     List<Chanson> liste;
     Modele modele;
-
     int chansonCourant;
+    Handler handler;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        chansonCourant = 0;
+        Intent intent = getIntent();
+        chansonCourant = intent.getIntExtra("chanson", 0);
+
         vue = findViewById(R.id.vue);
         titre = findViewById(R.id.titre);
         rewind = findViewById(R.id.rewind);
@@ -58,7 +63,8 @@ public class MainActivity extends AppCompatActivity implements JSONObserver, Run
         previous = findViewById(R.id.previous);
         shuffle = findViewById(R.id.shuffle);
         ec = new Ecouteur();
-        chansonCourant = 0;
+
+        handler = new Handler();
 
         seekBar = findViewById(R.id.seekBar);
         player = new ExoPlayer.Builder(this).build();
@@ -68,36 +74,28 @@ public class MainActivity extends AppCompatActivity implements JSONObserver, Run
         //permet la musique de continuer quand l'app est en background
 
         modele = Modele.getInstance(this,this);
-        modele.openJSON();
+        //modele.openJSON();
         play.setOnClickListener(ec);
         next.setOnClickListener(ec);
         previous.setOnClickListener(ec);
         playerOn = false;
+        preparePlayer();
 
-        //PlayerControlView:
-//        This component encapsulates a PlayerControlView for playback controls, SubtitleView for displaying
-//        subtitles, and Surface for rendering video.
 
-//        play() and pause() to start and pause playback
-//        seekTo() to seek to a position within the current media item
-//        seekToNextMediaItem() and seekToPreviousMediaItem() to navigate through the playlist
 
-        //seekback seekforward
+        //***************** A FAIRE:
+
+
+        // Ecouteur anonymisé a faire (setclicklistener)
+        // completer Thread & seekbar
     }
 
     @Override
     public void changement() {
-        preparePlayer();
+        //  JSON deja loadé
     }
 
     //thread pour le seekBar
-    @Override
-    public void run() {
-        //seekbar setprogress;
-        // actions à faire
-        Handler handler = new Handler();
-        handler.postDelayed(MainActivity.this, 1000);
-    }
 
 
     public class Ecouteur implements View.OnClickListener{
@@ -118,6 +116,10 @@ public class MainActivity extends AppCompatActivity implements JSONObserver, Run
             else if (source==next){
                 player.seekToNextMediaItem();
                 // player.getMediaItemAt()
+                //reset le seekbar
+                player.getCurrentMediaItem()
+                seekBar.setMax((int)player.getCurrentPosition()/1000);
+                seekBar.setProgress(0);
                 String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
                         liste.get(player.getCurrentMediaItemIndex()).getTitle();
                 titre.setText(chanson);
@@ -125,15 +127,18 @@ public class MainActivity extends AppCompatActivity implements JSONObserver, Run
             }
             else if (source==previous){
                 player.seekToPreviousMediaItem();
+                //reset le seekbar
+                seekBar.setMax((int)player.getCurrentPosition()/1000);
+                seekBar.setProgress(0);
                 String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
                         liste.get(player.getCurrentMediaItemIndex()).getTitle();
                 titre.setText(chanson);
             }
             else if(source==rewind){
-                player.seekTo(-15000);
+                player.seekTo(-10000);
             }
             else if(source==fastForward){
-                player.seekTo(15000);
+                player.seekTo(10000);
             }
 
             else if (source==shuffle){
@@ -144,6 +149,23 @@ public class MainActivity extends AppCompatActivity implements JSONObserver, Run
         }
     }
 
+    private class SeekBarThread implements Runnable{
+        public void run() {
+           afficher();
+        }
+    }
+
+    public void afficher() {
+        // seekbar setprogress;
+        // actions à faire
+
+        seekBar.setMax((int)player.getCurrentPosition()/1000);
+        seekBar.setProgress(0);
+        handler.postDelayed(new SeekBarThread(), 1000);
+    }
+
+
+
     private void preparePlayer() {
 
 
@@ -153,10 +175,14 @@ public class MainActivity extends AppCompatActivity implements JSONObserver, Run
             player.addMediaItem(MediaItem.fromUri(liste.get(i).getSource()));
         }
 
+        player.seekTo(chansonCourant);
+
         String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
                 liste.get(player.getCurrentMediaItemIndex()).getTitle();
         titre.setText(chanson);
         player.prepare();
+        seekBar.setMax((int)player.getCurrentPosition()/1000);
+        seekBar.setProgress(0);
 
 
     }
