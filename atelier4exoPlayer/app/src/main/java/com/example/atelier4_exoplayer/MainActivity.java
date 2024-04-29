@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
     Modele modele;
     int chansonCourant;
     Handler handler;
+    SeekBarThread seekBarThread;
 
 
     @Override
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
         ec = new Ecouteur();
 
         handler = new Handler();
+        seekBarThread = new SeekBarThread();
 
         seekBar = findViewById(R.id.seekBar);
         player = new ExoPlayer.Builder(this).build();
@@ -81,21 +83,13 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
         playerOn = false;
         preparePlayer();
 
-
-
-        //***************** A FAIRE:
-
-
-        // Ecouteur anonymisé a faire (setclicklistener)
-        // completer Thread & seekbar
     }
 
     @Override
     public void changement() {
-        //  JSON deja loadé
-    }
 
-    //thread pour le seekBar
+
+    }
 
 
     public class Ecouteur implements View.OnClickListener{
@@ -106,20 +100,21 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
                     play();
                     play.setImageResource(R.drawable.pause);
                     playerOn=true;
+                    handler.post(seekBarThread);
                 }
                 else{
                     player.pause();
                     play.setImageResource(R.drawable.play);
                     playerOn=false;
+                    handler.removeCallbacks(seekBarThread);
                 }
             }
             else if (source==next){
                 player.seekToNextMediaItem();
                 // player.getMediaItemAt()
                 //reset le seekbar
-                player.getCurrentMediaItem()
-                seekBar.setMax((int)player.getCurrentPosition()/1000);
-                seekBar.setProgress(0);
+                //player.getCurrentMediaItem()
+                //handler.post(seekBarThread);
                 String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
                         liste.get(player.getCurrentMediaItemIndex()).getTitle();
                 titre.setText(chanson);
@@ -127,18 +122,18 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
             }
             else if (source==previous){
                 player.seekToPreviousMediaItem();
-                //reset le seekbar
-                seekBar.setMax((int)player.getCurrentPosition()/1000);
-                seekBar.setProgress(0);
+                //handler.post(seekBarThread);
                 String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
                         liste.get(player.getCurrentMediaItemIndex()).getTitle();
                 titre.setText(chanson);
             }
             else if(source==rewind){
                 player.seekTo(-10000);
+                handler.post(seekBarThread);
             }
             else if(source==fastForward){
                 player.seekTo(10000);
+                handler.post(seekBarThread);
             }
 
             else if (source==shuffle){
@@ -156,12 +151,10 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
     }
 
     public void afficher() {
-        // seekbar setprogress;
-        // actions à faire
 
-        seekBar.setMax((int)player.getCurrentPosition()/1000);
-        seekBar.setProgress(0);
-        handler.postDelayed(new SeekBarThread(), 1000);
+        seekBar.setMax(liste.get(player.getCurrentMediaItemIndex()).getDuration());
+        seekBar.setProgress((int)player.getCurrentPosition()/1000);
+        handler.postDelayed(seekBarThread, 1000);
     }
 
 
@@ -191,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
         String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
                 liste.get(player.getCurrentMediaItemIndex()).getTitle();
         titre.setText(chanson);
+        handler.post(seekBarThread);
     }
 
 
