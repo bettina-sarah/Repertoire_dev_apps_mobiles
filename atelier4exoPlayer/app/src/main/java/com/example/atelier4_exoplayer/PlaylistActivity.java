@@ -22,14 +22,8 @@ import java.util.Vector;
 
 public class PlaylistActivity extends AppCompatActivity implements JSONObserver {
 
-    ImageView imageChanson;
-    TextView auteur;
-    TextView nomChanson;
-
     Vector<HashMap<String, Object>> vecteur;
-
     Modele modele;
-
     List<Chanson> liste;
 
     ListView playlist;
@@ -41,11 +35,6 @@ public class PlaylistActivity extends AppCompatActivity implements JSONObserver 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.playlist);
 
-
-
-//        imageChanson = findViewById(R.id.imageChanson);
-//        auteur = findViewById(R.id.auteurChanson);
-//        nomChanson = findViewById(R.id.titreChanson);
         playlist = findViewById(R.id.playlist);
 
         vecteur = new Vector<>();

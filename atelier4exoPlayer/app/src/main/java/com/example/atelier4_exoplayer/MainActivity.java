@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -24,22 +25,16 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
 
     ExoPlayer player;
     PlayerView vue;
-
     TextView titre;
-
     ImageButton rewind;
     ImageButton play;
     ImageButton fastForward;
     ImageButton next;
     ImageButton previous;
     ImageButton shuffle;
-
     SeekBar seekBar;
-
     Ecouteur ec;
-
     boolean playerOn;
-
     List<Chanson> liste;
     Modele modele;
     int chansonCourant;
@@ -77,22 +72,29 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
 
         modele = Modele.getInstance(this,this);
         //modele.openJSON();
-        play.setOnClickListener(ec);
-        next.setOnClickListener(ec);
         previous.setOnClickListener(ec);
+        rewind.setOnClickListener(ec);
+        play.setOnClickListener(ec);
+        fastForward.setOnClickListener(ec);
+        next.setOnClickListener(ec);
+        //bonus
+        shuffle.setOnClickListener(ec);
+
         playerOn = false;
         preparePlayer();
+
+        //bonus
+        seekBar.setOnSeekBarChangeListener(ec);
 
     }
 
     @Override
     public void changement() {
 
-
     }
 
 
-    public class Ecouteur implements View.OnClickListener{
+    public class Ecouteur implements View.OnClickListener, SeekBar.OnSeekBarChangeListener{
         @Override
         public void onClick(View source) {
             if(source==play){
@@ -111,10 +113,6 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
             }
             else if (source==next){
                 player.seekToNextMediaItem();
-                // player.getMediaItemAt()
-                //reset le seekbar
-                //player.getCurrentMediaItem()
-                //handler.post(seekBarThread);
                 String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
                         liste.get(player.getCurrentMediaItemIndex()).getTitle();
                 titre.setText(chanson);
@@ -122,25 +120,47 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
             }
             else if (source==previous){
                 player.seekToPreviousMediaItem();
-                //handler.post(seekBarThread);
                 String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
                         liste.get(player.getCurrentMediaItemIndex()).getTitle();
                 titre.setText(chanson);
             }
             else if(source==rewind){
-                player.seekTo(-10000);
-                handler.post(seekBarThread);
+                if(player.getCurrentPosition() < 10000){ //si moins de 10 secondes, reset a 0
+                    player.seekTo(0);
+                }
+                else{
+                    player.seekTo(player.getCurrentPosition()-10000);
+                }
+
+                //handler.post(seekBarThread);
             }
             else if(source==fastForward){
-                player.seekTo(10000);
-                handler.post(seekBarThread);
+                player.seekTo(player.getCurrentPosition()+10000);
+                //handler.post(seekBarThread);
             }
 
             else if (source==shuffle){
                 player.setShuffleModeEnabled(true);
-                //marche pas - faire collections peut-etre
+                Toast toast = Toast.makeText(MainActivity.this, "playlist shufflé!", Toast.LENGTH_SHORT);
+                toast.show();
             }
 
+        }
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            player.seekTo(seekBar.getProgress()*1000);
+            handler.post(seekBarThread);
         }
     }
 
@@ -156,8 +176,6 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
         seekBar.setProgress((int)player.getCurrentPosition()/1000);
         handler.postDelayed(seekBarThread, 1000);
     }
-
-
 
     private void preparePlayer() {
 
@@ -187,27 +205,30 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
         handler.post(seekBarThread);
     }
 
-
-
     @Override
     protected void onStart() {
         super.onStart();
         player.seekTo(chansonCourant, 0);
+        String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
+                liste.get(player.getCurrentMediaItemIndex()).getTitle();
+        titre.setText(chanson);
         player.prepare();
-
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         chansonCourant = player.getCurrentMediaItemIndex();
+        player.stop();
         player.release();
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         chansonCourant = player.getCurrentMediaItemIndex();
+        player.stop();
         player.release();
     }
 
@@ -215,6 +236,9 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
     protected void onPause() {
         super.onPause();
         player.seekTo(chansonCourant, 0);
+        String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
+                liste.get(player.getCurrentMediaItemIndex()).getTitle();
+        titre.setText(chanson);
         player.prepare();
         //garder en memoire ou on est rendu
     }
@@ -222,6 +246,9 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
     protected void onResume() {
         super.onResume();
         player.seekTo(chansonCourant, 0);
+        String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
+                liste.get(player.getCurrentMediaItemIndex()).getTitle();
+        titre.setText(chanson);
         player.prepare();
     }
 }
