@@ -3,6 +3,7 @@ package com.example.atelier4_exoplayer;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.session.MediaSession;
 import androidx.media3.session.MediaSessionService;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
     ImageButton shuffle;
     SeekBar seekBar;
     Ecouteur ec;
+    PlayerListener playerListener;
     boolean playerOn;
     List<Chanson> liste;
     Modele modele;
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
         previous = findViewById(R.id.previous);
         shuffle = findViewById(R.id.shuffle);
         ec = new Ecouteur();
+        playerListener = new PlayerListener();
 
         handler = new Handler();
         seekBarThread = new SeekBarThread();
@@ -192,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
                 liste.get(player.getCurrentMediaItemIndex()).getTitle();
         titre.setText(chanson);
         player.prepare();
+        player.addListener(playerListener);
         seekBar.setMax((int)player.getCurrentPosition()/1000);
         seekBar.setProgress(0);
 
@@ -250,5 +254,20 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
                 liste.get(player.getCurrentMediaItemIndex()).getTitle();
         titre.setText(chanson);
         player.prepare();
+    }
+
+    public class PlayerListener implements Player.Listener {
+        @Override
+        public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
+            Player.Listener.super.onMediaItemTransition(mediaItem, reason);
+        }
+
+        @Override
+        public void onPositionDiscontinuity(Player.PositionInfo oldPosition, Player.PositionInfo newPosition, int reason) {
+            if (reason == player.DISCONTINUITY_REASON_AUTO_TRANSITION && newPosition.periodIndex == player.getCurrentTimeline().getPeriodCount() - 1) {
+                // SI rendu a la fin du playlist
+                player.seekTo(0,0);
+            }
+        }
     }
 }
