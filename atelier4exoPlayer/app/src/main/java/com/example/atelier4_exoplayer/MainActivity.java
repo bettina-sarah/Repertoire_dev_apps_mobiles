@@ -24,7 +24,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements JSONObserver {
 
-    //enlev/ du manifest: android:theme="@style/Theme.Atelier4exoPlayer"
     // enlev du themes.xml:
     //<style name="Theme.Atelier4exoPlayer" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
 
@@ -119,7 +118,13 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
                 }
             }
             else if (source==next){
-                player.seekToNextMediaItem();
+                if(player.hasNextMediaItem()){
+                    player.seekToNextMediaItem();
+                }
+                else{ // repeter playlist
+                    player.seekTo(0,0);
+                }
+
                 String chanson = liste.get(player.getCurrentMediaItemIndex()).getArtist() + " - " +
                         liste.get(player.getCurrentMediaItemIndex()).getTitle();
                 titre.setText(chanson);
@@ -139,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
                     player.seekTo(player.getCurrentPosition()-10000);
                 }
 
-                //handler.post(seekBarThread);
             }
             else if(source==fastForward){
                 player.seekTo(player.getCurrentPosition()+10000);
@@ -264,14 +268,7 @@ public class MainActivity extends AppCompatActivity implements JSONObserver {
         @Override
         public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
             Player.Listener.super.onMediaItemTransition(mediaItem, reason);
-        }
-
-        @Override
-        public void onPositionDiscontinuity(Player.PositionInfo oldPosition, Player.PositionInfo newPosition, int reason) {
-            if (reason == player.DISCONTINUITY_REASON_AUTO_TRANSITION && newPosition.periodIndex == player.getCurrentTimeline().getPeriodCount() - 1) {
-                // SI rendu a la fin du playlist
-                player.seekTo(0,0);
-            }
+            handler.post(seekBarThread);
         }
     }
 }

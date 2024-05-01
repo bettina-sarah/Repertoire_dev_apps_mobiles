@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/spotify_grey"
+    android:backgroundTint="@color/spotify_grey"
     tools:context=".MainActivity">
 
     <androidx.media3.ui.PlayerView
@@ -28,64 +30,69 @@
                     android:id="@+id/titre"
                     android:layout_width="276dp"
                     android:layout_height="100dp"
-                    android:layout_margin="10dp"
                     android:text="TextView"
                     android:textAlignment="center"
+                    android:textColor="@color/spotify_green"
                     android:textSize="24sp" />
 
                 <SeekBar
                     android:id="@+id/seekBar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp" />
+                    android:layout_height="30dp"
+                    android:layout_margin="10dp"
+                    android:background="#6C0B0B"
+                    android:backgroundTint="@color/spotify_grey"
+                    android:maxHeight="3dp"
+                    android:minHeight="3dp"
+                    android:thumbTint="@color/teal_700" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/buttonLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.4"
+                android:layout_weight="0.35"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_weight="0.8"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/previous"
                         android:layout_width="80dp"
-                        android:layout_height="100dp"
+                        android:layout_height="90dp"
                         android:scaleType="fitXY"
                         app:srcCompat="@drawable/previous" />
 
                     <ImageButton
                         android:id="@+id/rewind"
                         android:layout_width="80dp"
-                        android:layout_height="100dp"
+                        android:layout_height="90dp"
                         android:scaleType="fitXY"
                         app:srcCompat="@drawable/rewind" />
 
                     <ImageButton
                         android:id="@+id/play"
                         android:layout_width="80dp"
-                        android:layout_height="100dp"
+                        android:layout_height="90dp"
                         android:scaleType="fitXY"
                         app:srcCompat="@drawable/play" />
 
                     <ImageButton
                         android:id="@+id/fastForward"
                         android:layout_width="80dp"
-                        android:layout_height="100dp"
+                        android:layout_height="90dp"
                         android:scaleType="fitXY"
                         app:srcCompat="@drawable/fast_forward" />
 
                     <ImageButton
                         android:id="@+id/next"
                         android:layout_width="80dp"
-                        android:layout_height="100dp"
+                        android:layout_height="90dp"
                         android:scaleType="fitXY"
                         app:srcCompat="@drawable/next" />
 
@@ -94,14 +101,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_weight="0.8"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal">
 
                     <ImageButton
                         android:id="@+id/shuffle"
                         android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_height="90dp"
                         android:scaleType="fitXY"
                         app:srcCompat="@drawable/shuffle" />
                 </LinearLayout>
