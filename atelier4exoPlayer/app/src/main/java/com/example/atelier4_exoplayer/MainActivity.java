@@ -24,6 +24,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements JSONObserver {
 
+    //enlev/ du manifest: android:theme="@style/Theme.Atelier4exoPlayer"
+    // enlev du themes.xml:
+    //<style name="Theme.Atelier4exoPlayer" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+
     ExoPlayer player;
     PlayerView vue;
     TextView titre;

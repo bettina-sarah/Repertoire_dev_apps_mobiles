@@ -58,7 +58,7 @@ public class AccueilActivity extends AppCompatActivity {
 
     }
 
-    //deactivé a cause de manifest.xml
+   // deactivé a cause de manifest.xml
 
 //    @Override
 //    protected void onSaveInstanceState(@NonNull Bundle outState) { //appelé juste avant qu'on quitte lappli (qu'on tourne!)
