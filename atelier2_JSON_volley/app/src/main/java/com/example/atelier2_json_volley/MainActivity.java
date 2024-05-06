@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
 //        //!!! IMPORTANT
 //        mRequestQueue.add(mRequest);
 
-
         //************ VERSION 2 - LISTE COMPLEXE
 //        listView = findViewById(R.id.listView);
 //        vecteur = new Vector<>();
@@ -119,8 +118,6 @@ public class MainActivity extends AppCompatActivity {
 
         mRequestQueue = Volley.newRequestQueue(this);
         mRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-
-
             @Override
             public void onResponse(String response) {
                 Gson gson = new GsonBuilder().create();
@@ -132,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }, new Response.ErrorListener() {
-
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.i("erreur", error.toString());
